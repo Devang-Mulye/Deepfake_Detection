@@ -16,8 +16,8 @@ def detect_person(frame):
 
 # Function to perform skin texture detection within the detected person region
 def detect_skin_texture(frame, persons):
-    total_frames = 0
-    consistent_skin_frames = 0
+    total_persons = len(persons)
+    consistent_skin_persons = 0
     
     for (x, y, w, h) in persons:
         # Extract region of interest (ROI) containing the detected person
@@ -40,12 +40,13 @@ def detect_skin_texture(frame, persons):
         
         # Threshold to determine if the skin texture is consistent
         if white_pixels < 50000:  # Adjust threshold as needed
-            consistent_skin_frames += 1
-        
-        total_frames += 1
+            consistent_skin_persons += 1
     
-    # Calculate the percentage of frames where skin texture is consistent
-    consistency_percentage = (consistent_skin_frames / total_frames) * 100
+    # Calculate the percentage of persons where skin texture is consistent
+    if total_persons > 0:
+        consistency_percentage = min((consistent_skin_persons / total_persons) * 100, 100)
+    else:
+        consistency_percentage = 0
     
     return consistency_percentage
 
@@ -78,11 +79,11 @@ def process_video(video_path):
     cap.release()
     
     # Calculate the percentage of frames where skin texture is consistent across persons
-    overall_consistency_percentage = (consistent_skin_frames / total_frames) * 100
+    overall_consistency_percentage = min((consistent_skin_frames / total_frames) * 100, 100)
     overall_inconsistency_percentage = 100 - overall_consistency_percentage
     
     print(f"Percentage of video frames with consistent skin texture: {overall_consistency_percentage:.2f}%")
     print(f"Percentage of video frames with inconsistent skin texture: {overall_inconsistency_percentage:.2f}%")
 
 # Call the function to process the video
-process_video('To_Test/fake4.mp4')
+process_video('To_Test/fake3.mp4')
